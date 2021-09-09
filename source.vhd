@@ -9,19 +9,17 @@ i_rst : in std_logic;
 i_start : in std_logic;
 i_data : in std_logic_vector(7 downto 0);
 o_address : out std_logic_vector(15 downto 0);
-o_done : out std_logic;
 o_en : out std_logic;
-o_we : out std_logic;
-o_data : out std_logic_vector (7 downto 0)
+o_we : out std_logic
 );
 end project_reti_logiche;
 
 architecture Behavioral of project_reti_logiche is
 	type state_type is (IDLE,FETCH_DATA,READ_COLUMN,READ_ROW,READ_PIXEL);
 
-	signal index : std_logic_vector range 15 downto 0;
+	signal index : std_logic_vector(15 downto 0);
 	--Offset per la lettura dei dati della immagine nella RAM
-	signal offset : unsigned range 65535 downto 0;
+	signal offset : unsigned (65535 downto 0);
 	signal max,min : integer range 255 downto 0;
 	--signal shift : unsigned range 8 downto 0;
 	--Segnali degli stati
