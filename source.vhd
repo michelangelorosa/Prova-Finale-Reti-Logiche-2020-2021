@@ -66,7 +66,7 @@ BEGIN
 						next_state <= READ_ROW;
 						--Prepara lettura pixel
 						-- si potrebbe semplificare questo check. da valutare l'introduzione di nuovi stati della macchina per rendere il tutto pi� leggibile.
-					ELSIF ((unsigned(index) < multiply + offset)) THEN
+					ELSIF ((unsigned(index) < multiply + offset) OR (reading_type = 3)) THEN
 						o_address <= index;
 						index <= STD_LOGIC_VECTOR(unsigned(index) + 1);
 						curr_state <= WAIT_RAM;
@@ -80,13 +80,13 @@ BEGIN
 					curr_state <= next_state;
 
 				WHEN READ_COLUMN =>
-					REPORT "colonna: " & INTEGER'image(to_integer(unsigned(i_data)));
+					--REPORT "colonna: " & INTEGER'image(to_integer(unsigned(i_data)));
 					multiply <= (to_integer(unsigned(i_data)));
 					reading_type <= 1;
 					curr_state <= FETCH_DATA;
 
 				WHEN READ_ROW =>
-					REPORT "riga: " & INTEGER'image(to_integer(unsigned(i_data)));
+					--REPORT "riga: " & INTEGER'image(to_integer(unsigned(i_data)));
 					multiply <= (to_integer(unsigned(i_data))) * multiply;
 					reading_type <= 2;
 					curr_state <= FETCH_DATA;
@@ -94,7 +94,7 @@ BEGIN
 				WHEN READ_PIXEL =>
 					--Ricerca massimo e minimo
 					--report "Entro in READ_PIXEL con reading_type " & integer'image(reading_type);
-					REPORT "pixel vale: " & INTEGER'image(TO_INTEGER(unsigned(i_data)));
+					--REPORT "pixel vale: " & INTEGER'image(TO_INTEGER(unsigned(i_data)));
 					IF (reading_type = 2) THEN
 						IF (to_integer(unsigned(i_data)) < min) THEN
 							min <= to_integer(unsigned(i_data));
@@ -112,9 +112,9 @@ BEGIN
 					ELSIF (reading_type = 3) THEN
 						-- casting da riguardare
 						shifted_value <= STD_LOGIC_VECTOR(shift_left(to_unsigned(to_integer(unsigned(i_data)) - min, 16), shift));
-						curr_state <= FETCH_DATA;
-						REPORT "min: " & INTEGER'image(min);
-						REPORT "shift: " & INTEGER'image(shift);
+						curr_state <= VALUE_CHECK;
+						--REPORT "min: " & INTEGER'image(min);
+						--REPORT "shift: " & INTEGER'image(shift);
 						--report "Reading Type 3 in READ_PIXEL index vale "  & integer'image(TO_INTEGER(unsigned(index))-1);
 					END IF;
 
@@ -130,9 +130,7 @@ BEGIN
 					o_en <= '1';
 					o_we <= '1';
 					--da riguardare questi casting
-
-					--REPORT "VALUE_CHECK indice vale: " & INTEGER'image(TO_INTEGER(unsigned(index)) - 1);
-					--report "Shifted value vale: " & integer'image(TO_INTEGER(unsigned(shifted_value)));
+					report "Shifted value vale: " & integer'image(TO_INTEGER(unsigned(shifted_value)));
 					o_address <= STD_LOGIC_VECTOR(to_unsigned(to_integer(unsigned(index)) + multiply - 1, 16));
 					IF (to_integer(unsigned(shifted_value)) > 255) THEN
 						o_data <= STD_LOGIC_VECTOR(to_unsigned(255, 8));
