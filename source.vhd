@@ -38,9 +38,7 @@ ARCHITECTURE Behavioral OF project_reti_logiche IS
 BEGIN
     PROCESS (i_clk, i_rst) IS
     BEGIN
-        IF (rising_edge(i_rst)) THEN
-            curr_state <= IDLE;
-            end if;
+
         IF (rising_edge(i_clk)) THEN
             CASE curr_state IS
                 WHEN SLEEP_STATE =>
@@ -175,6 +173,10 @@ BEGIN
                         curr_state <= IDLE;
                     --END IF;
             END CASE;
+                    IF (i_rst='1') THEN
+            curr_state <= IDLE;
+            end if;
+        
         END IF;
 	END PROCESS;
 END Behavioral;
