@@ -40,7 +40,7 @@ BEGIN
     BEGIN
         IF (rising_edge(i_rst)) THEN
             curr_state <= IDLE;
-        END IF;
+            end if;
         IF (rising_edge(i_clk)) THEN
             CASE curr_state IS
                 WHEN SLEEP_STATE =>
@@ -101,15 +101,16 @@ BEGIN
                     IF (reading_type = 2) THEN
                         IF (to_integer(unsigned(i_data)) < min) THEN
                             min <= to_integer(unsigned(i_data));
-
+							
                         END IF;
                         IF (to_integer(unsigned(i_data)) > max) THEN
                             max <= to_integer(unsigned(i_data));
-
+							
                         END IF;
-                        curr_state <= FETCH_DATA;
                         IF (unsigned(index) = multiply + offset) THEN
                             curr_state <= SET_EQUALIZATION;
+						ELSE
+							curr_state <= FETCH_DATA;
                         END IF;
                         --Calcolo della trasformata
                     ELSIF (reading_type = 3) THEN
@@ -169,11 +170,11 @@ BEGIN
                     curr_state <= FETCH_DATA;
 
                 WHEN DONE =>
-                    IF (falling_edge(i_start)) THEN
+                    --IF (falling_edge(i_start)) THEN
                         o_done <= '0';
                         curr_state <= IDLE;
-                    END IF;
+                    --END IF;
             END CASE;
         END IF;
-    END PROCESS;
+	END PROCESS;
 END Behavioral;
